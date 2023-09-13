@@ -2,8 +2,11 @@
 export default {
 	content: ['./src/**/*.{html,js,svelte,ts}'],
 	theme: {
-		colors: {},
+		// colors: {},
 		extend: {
+			fontFamily: {
+				inter: 'Inter, sans-serif',
+			},
 			textColor: {
 				// Цвета типографии (текст + иконки)
 				primary: 'rgba(255, 255, 255)',

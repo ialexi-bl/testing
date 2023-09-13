@@ -8,11 +8,11 @@ export type Metric = LinearMetric | PieMetric | ColumnMetric | NumberMetric
 
 // Конкретные метрики
 
-export enum MetricType {
-	linear = 'linear',
-	pie = 'pie',
-	column = 'column',
-	number = 'number',
+export const enum MetricType {
+	Linear = 'linear',
+	Pie = 'pie',
+	Column = 'column',
+	Number = 'number',
 }
 
 type MetricBase = {
@@ -21,23 +21,23 @@ type MetricBase = {
 }
 
 type LinearMetric = MetricBase & {
-	type: MetricType.linear
+	type: MetricType.Linear
 	xUnits?: 'none' | 'datetime'
 
 	data: [x: number, y: number][]
 }
 
 type PieMetric = MetricBase & {
-	type: MetricType.pie
+	type: MetricType.Pie
 	data: Record<string, number>
 }
 
 type ColumnMetric = MetricBase & {
-	type: MetricType.linear
+	type: MetricType.Column
 	data: [category: number | string, value: number][]
 }
 
 type NumberMetric = MetricBase & {
-	type: MetricType.number
+	type: MetricType.Number
 	data: number
 }
