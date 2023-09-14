@@ -18,5 +18,5 @@ jobs:
             - name: Prettify
               uses: creyD/prettier_action@v4.3
               with:
-                  prettier_options: --write **/*.{js,md}
+                  prettier_options: --write .
                   only_changed: True
