@@ -2,10 +2,34 @@ name: PR checks
 
 on:
     pull_request:
-        branches: ['master']
+        branches:
+            - master
 
-runs:
-    using: 'composite'
-    steps:
-        - name: Prettier Action
-          uses: creyD/prettier_action@v4.3
+jobs:
+    prettier:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v3
+              with:
+                  ref: ${{ github.head_ref }}
+                  fetch-depth: 0
+            - run: npm install
+            - run: npx prettier --check `git diff --name-only origin/master..${{ github.head_ref }}`
+    typescript:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v3
+              with:
+                  ref: ${{ github.head_ref }}
+                  fetch-depth: 0
+            - run: npm install
+            - run: npx tsc --noEmit
+    eslint:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v3
+              with:
+                  ref: ${{ github.head_ref }}
+                  fetch-depth: 0
+            - run: npm install
+            - run: npx eslint .
