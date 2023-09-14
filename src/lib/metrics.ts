@@ -4,10 +4,9 @@ export type MetricsJson = {
 
 export type Metrics = Metric[]
 
-export type Metric =    LinearMetric | PieMetric | ColumnMetric | NumberMetric
+export type Metric = LinearMetric | PieMetric | ColumnMetric | NumberMetric
 
 export const a: number = 2
-export const b: string = 2
 
 // Конкретные метрики
 
