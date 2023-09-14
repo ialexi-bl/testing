@@ -1,0 +1,46 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Build app') {
+            steps {
+                sh 'npm i'
+                sh 'npm run build'
+                archiveArtifacts artifacts: 'build/**, package.json, package-lock.json', fingerprint: true
+            }
+        }
+        stage('Build and publish docker image') {
+            steps {
+                script {
+                    def customImage = docker.build('abtesting:${env.BUILD_ID}', './.build')
+
+                    docker.withRegistry('https://agent2.jabuj.com:8888', 'docker-agent2-credentials')
+                    customImage.push()
+                    customImage.push('latest')
+                }
+            }
+        }
+        stage('Deploy') {
+            environment {
+                ORIGIN = 'https://jabuj.com'
+            }
+            when {
+                expression {
+                    currentBuild.result == null || currentBuild.result == 'SUCCESS'
+                }
+            }
+            steps {
+                sh 'echo "deploying to $ORIGIN"'
+            }
+        }
+    }
+}
+
+// registry:
+// abtesting
+// NconTriGAnGL
+
+// jenkins:
+// abtesting
+// z8Ck963+#g4=1IO|GP:.
+
