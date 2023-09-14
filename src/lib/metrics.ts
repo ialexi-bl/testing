@@ -1,5 +1,5 @@
 export type MetricsJson = {
-	metrics: Metrics
+    metrics: Metrics
 }
 
 export type Metrics = Metric[]
@@ -8,36 +8,36 @@ export type Metric = LinearMetric | PieMetric | ColumnMetric | NumberMetric
 
 // Конкретные метрики
 
-export enum MetricType {
-	linear = 'linear',
-	pie = 'pie',
-	column = 'column',
-	number = 'number',
+export const enum MetricType {
+    Linear = 'linear',
+    Pie = 'pie',
+    Column = 'column',
+    Number = 'number',
 }
 
 type MetricBase = {
-	id: string
-	displayName: string
+    id: string
+    displayName: string
 }
 
 type LinearMetric = MetricBase & {
-	type: MetricType.linear
-	xUnits?: 'none' | 'datetime'
+    type: MetricType.Linear
+    xUnits?: 'none' | 'datetime'
 
-	data: [x: number, y: number][]
+    data: [x: number, y: number][]
 }
 
 type PieMetric = MetricBase & {
-	type: MetricType.pie
-	data: Record<string, number>
+    type: MetricType.Pie
+    data: Record<string, number>
 }
 
 type ColumnMetric = MetricBase & {
-	type: MetricType.linear
-	data: [category: number | string, value: number][]
+    type: MetricType.Column
+    data: [category: number | string, value: number][]
 }
 
 type NumberMetric = MetricBase & {
-	type: MetricType.number
-	data: number
+    type: MetricType.Number
+    data: number
 }

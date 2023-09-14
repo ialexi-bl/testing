@@ -1,3 +1,19 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+body {
+    @apply bg-secondary text-primary font-inter text-base;
+}
+
+@layer base {
+    .side-panel-btn {
+        @apply border rounded border-white/20 w-full py-2 px-2 font-medium cursor-pointer transition ease-in-out duration-300;
+    }
+    .side-panel-btn-idle {
+        @apply side-panel-btn bg-primary hover:bg-control-primary/20 active:bg-control-primary;
+    }
+    .side-panel-btn-selected {
+        @apply side-panel-btn bg-control-primary;
+    }
+}
