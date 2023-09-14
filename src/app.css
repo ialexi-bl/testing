@@ -3,5 +3,5 @@
 @tailwind utilities;
 
 body {
-	@apply bg-secondary text-primary font-inter text-base;
+    @apply bg-secondary text-primary font-inter text-base;
 }
