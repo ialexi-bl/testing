@@ -1,0 +1,11 @@
+name: PR checks
+
+on:
+    pull_request:
+        branches: ['master']
+
+runs:
+    using: 'composite'
+    steps:
+        - name: Prettier Action
+          uses: creyD/prettier_action@v4.3
