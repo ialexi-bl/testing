@@ -23,7 +23,7 @@ jobs:
                   ref: ${{ github.head_ref }}
                   fetch-depth: 0
             - run: npm install
-            - run: npx tsc --noEmit
+            - run: npx svelte-check
     eslint:
         runs-on: ubuntu-latest
         steps:
@@ -32,4 +32,4 @@ jobs:
                   ref: ${{ github.head_ref }}
                   fetch-depth: 0
             - run: npm install
-            - run: npx eslint .
+            - run: npx eslint --ext .ts,.js,.tsx,.jsx,.svelte .
