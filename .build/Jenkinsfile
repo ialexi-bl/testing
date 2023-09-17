@@ -11,9 +11,14 @@ pipeline {
         }
         stage('Build and publish docker image') {
             steps {
+                echo "Building docker image"
+                
                 script {
+                    PWD = pwd
+                    echo 'pwd: ${PWD}'
                     def customImage = docker.build('abtesting:${env.BUILD_ID}', './.build')
 
+                    echo 'image: ${customImage}'
                     docker.withRegistry('https://agent2.jabuj.com:8888', 'docker-agent2-credentials')
                     customImage.push()
                     customImage.push('latest')
