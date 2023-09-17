@@ -1,0 +1,18 @@
+name: CD Deployment
+
+on:
+    push:
+        branches:
+            - master
+
+jobs:
+    build:
+        name: 'Trigger build pipeline'
+        runs-on: ubuntu-latest
+        steps:
+            - uses: appleboy/jenkins-action@master
+              with:
+                  url: 'https://agent2.jabuj.com'
+                  user: 'abtesting'
+                  token: '${{ secrets.JENKINS_API_TOKEN }}'
+                  job: 'AB Testing Release'
