@@ -5,6 +5,7 @@ pipeline {
         stage('Build') {
             steps {
                 sh 'npm run build'
+                sh 'npm i'
                 archiveArtifacts artifacts: 'build/**, package.json, package-lock.json', fingerprint: true
             }
         }
