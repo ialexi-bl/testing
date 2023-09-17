@@ -1,7 +1,10 @@
 FROM node:20-alpine3.17 as deploy
 
 WORKDIR /app
-COPY . .
+COPY ../package*.json .
+COPY ../build .
+RUN npm ci --omit=dev
 
+ENV PORT=80
 EXPOSE 80
-CMD ['node', 'build']
+CMD [ "node", "build" ]
