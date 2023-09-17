@@ -15,7 +15,7 @@ pipeline {
                 echo "pwd: ${WORKSPACE}"
                 
                 script {
-                    def customImage = docker.build("abtesting:${env.BUILD_ID}", './.build')
+                    def customImage = docker.build("abtesting:${env.BUILD_ID}", '-f ./.build/Dockerfile')
 
                     docker.withRegistry('https://agent2.jabuj.com:8888', 'docker-agent2-credentials'){
                         docker.push()
