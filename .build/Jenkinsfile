@@ -12,16 +12,15 @@ pipeline {
         stage('Build and publish docker image') {
             steps {
                 echo "Building docker image"
+                echo "pwd: ${WORKSPACE}"
                 
                 script {
-                    PWD = pwd
-                    echo 'pwd: ${PWD}'
-                    def customImage = docker.build('abtesting:${env.BUILD_ID}', './.build')
+                    def customImage = docker.build("abtesting:${env.BUILD_ID}", './.build')
 
-                    echo 'image: ${customImage}'
-                    docker.withRegistry('https://agent2.jabuj.com:8888', 'docker-agent2-credentials')
-                    customImage.push()
-                    customImage.push('latest')
+                    docker.withRegistry('https://agent2.jabuj.com:8888', 'docker-agent2-credentials'){
+                        docker.push()
+                        docker.push('latest')
+                    }
                 }
             }
         }
@@ -40,12 +39,3 @@ pipeline {
         }
     }
 }
-
-// registry:
-// abtesting
-// NconTriGAnGL
-
-// jenkins:
-// abtesting
-// z8Ck963+#g4=1IO|GP:.
-
