@@ -10,9 +10,11 @@ jobs:
         name: 'Trigger build pipeline'
         runs-on: ubuntu-latest
         steps:
-            - uses: appleboy/jenkins-action@master
+            - uses: jabbukka/jenkins-trigger@main
               with:
                   url: 'https://agent2.jabuj.com:8080'
-                  user: 'abtesting'
-                  token: '${{ secrets.JENKINS_API_TOKEN }}'
-                  job: 'AB Testing Release'
+                  job_name: 'AB Testing Release'
+                  user_name: 'abtesting'
+                  api_token: '${{ secrets.JENKINS_API_TOKEN }}'
+                  wait: 'true'
+                  timeout: '999999'
