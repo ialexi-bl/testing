@@ -11,12 +11,12 @@ pipeline {
         }
         stage('Build and publish docker image') {
             steps {
-                echo "Building docker image"
-                
                 script {
+                    echo "Building docker image"
                     def image = docker.build("abtesting:${env.BUILD_ID}", '-f ./.build/Dockerfile .')
 
-                    docker.withRegistry('https://agent2.jabuj.com:8888', 'docker-agent2-credentials') {
+                    echo "Publishing image to registry"
+                    docker.withRegistry("${params.DOCKER_REGISTRY}", "${params.DOCKER_REGISTRY_CREDENTIALS}") {
                         image.push()
                         image.push('latest')
                     }
@@ -24,16 +24,44 @@ pipeline {
             }
         }
         stage('Deploy') {
-            environment {
-                ORIGIN = 'https://jabuj.com'
-            }
             when {
                 expression {
                     currentBuild.result == null || currentBuild.result == 'SUCCESS'
                 }
             }
+
             steps {
-                sh 'echo "deploying to $ORIGIN"'
+                script {
+                    def serviceName = "abtesting"
+                    def image = "${params.DOCKER_REGISTRY}/abtesting:${env.BUILD_ID}"
+                    def remote = [:]
+                    remote.name = params.DOCKER_HOST
+                    remote.host = params.DOCKER_HOST
+
+                    withCredentials([
+                        sshUserPrivateKey(credentialsId: params.DOCKER_HOST_CREDENTIALS, keyFileVariable: 'identity', passphraseVariable: 'passphrase', usernameVariable: 'username'),
+                        file(credentialsId: params.DOCKER_HOST_HOSTKEY, variable: 'knownHosts')
+                    ]) {
+                        remote.user = username
+                        remote.identityFile = identity
+                        remote.knownHosts = knownHosts
+                        
+                        sshCommand remote: remote, command: """
+                            docker service create \\
+                                --name ${serviceName} \\
+                                --replicas 3 \\
+                                --publish published=80,target=3000 \\
+                                -e PORT=3000 \\
+                                ${image}
+
+                            if [[ \$? != 0 ]]; then
+                                docker service update \\
+                                    --image ${image} \\
+                                    ${serviceName}
+                            fi
+                        """
+                    }
+                }
             }
         }
     }
