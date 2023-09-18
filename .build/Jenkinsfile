@@ -35,12 +35,12 @@ pipeline {
                     def serviceName = "abtesting"
                     def image = "${params.DOCKER_REGISTRY}/abtesting:${env.BUILD_ID}"
                     def remote = [:]
-                    remote.name = params.DOCKER_HOST
-                    remote.host = params.DOCKER_HOST
+                    remote.name = params.DOCKER_SERVICE_HOST
+                    remote.host = params.DOCKER_SERVICE_HOST
 
                     withCredentials([
-                        sshUserPrivateKey(credentialsId: params.DOCKER_HOST_CREDENTIALS, keyFileVariable: 'identity', passphraseVariable: 'passphrase', usernameVariable: 'username'),
-                        file(credentialsId: params.DOCKER_HOST_HOSTKEY, variable: 'knownHosts')
+                        sshUserPrivateKey(credentialsId: params.DOCKER_SERVICE_CREDENTIALS, keyFileVariable: 'identity', passphraseVariable: 'passphrase', usernameVariable: 'username'),
+                        file(credentialsId: params.DOCKER_SERVICE_HOSTKEY, variable: 'knownHosts')
                     ]) {
                         remote.user = username
                         remote.identityFile = identity
