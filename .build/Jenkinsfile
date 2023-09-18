@@ -16,7 +16,7 @@ pipeline {
                     def image = docker.build("abtesting:${env.BUILD_ID}", '-f ./.build/Dockerfile .')
 
                     echo "Publishing image to registry"
-                    docker.withRegistry("${params.DOCKER_REGISTRY}", "${params.DOCKER_REGISTRY_CREDENTIALS}") {
+                    docker.withRegistry("https://${params.DOCKER_REGISTRY}", "${params.DOCKER_REGISTRY_CREDENTIALS}") {
                         image.push()
                         image.push('latest')
                     }
@@ -40,15 +40,19 @@ pipeline {
 
                     withCredentials([
                         sshUserPrivateKey(credentialsId: params.DOCKER_SERVICE_CREDENTIALS, keyFileVariable: 'identity', passphraseVariable: 'passphrase', usernameVariable: 'username'),
-                        file(credentialsId: params.DOCKER_SERVICE_HOSTKEY, variable: 'knownHosts')
+                        file(credentialsId: params.DOCKER_SERVICE_HOSTKEY, variable: 'knownHosts'),
+                        usernamePassword(credentialsId: params.DOCKER_REGISTRY_CREDENTIALS, usernameVariable: 'dockerUsername', passwordVariable: 'dockerPassword')
                     ]) {
                         remote.user = username
                         remote.identityFile = identity
                         remote.knownHosts = knownHosts
                         
                         sshCommand remote: remote, command: """
+                            docker login --username ${dockerUsername} --password ${dockerPassword} ${params.DOCKER_REGISTRY}
+
                             docker service create \\
                                 --name ${serviceName} \\
+                                --with-registry-auth \\
                                 --replicas 3 \\
                                 --publish published=80,target=3000 \\
                                 -e PORT=3000 \\
@@ -56,9 +60,12 @@ pipeline {
 
                             if [[ \$? != 0 ]]; then
                                 docker service update \\
+                                    --with-registry-auth \\
                                     --image ${image} \\
                                     ${serviceName}
                             fi
+
+                            docker logout ${params.DOCKER_REGISTRY}
                         """
                     }
                 }
