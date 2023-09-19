@@ -30,32 +30,37 @@ pipeline {
                 }
             }
 
+            environment {
+                DOCKER_SERVICE_CREDS = credentials("${params.DOCKER_REGISTRY_CREDENTIALS}")
+                ABTESTING_IMAGE = "${params.DOCKER_REGISTRY}/abtesting:${env.BUILD_ID}"
+            }
+
             steps {
                 script {
                     def serviceName = "abtesting"
-                    def image = "${params.DOCKER_REGISTRY}/abtesting:${env.BUILD_ID}"
                     def remote = [:]
                     remote.name = params.DOCKER_SERVICE_HOST
                     remote.host = params.DOCKER_SERVICE_HOST
 
                     withCredentials([
                         sshUserPrivateKey(credentialsId: params.DOCKER_SERVICE_CREDENTIALS, keyFileVariable: 'identity', passphraseVariable: 'passphrase', usernameVariable: 'username'),
-                        usernamePassword(credentialsId: params.DOCKER_REGISTRY_CREDENTIALS, usernameVariable: 'dockerUsername', passwordVariable: 'dockerPassword'),
                         file(credentialsId: params.DOCKER_SERVICE_HOSTKEY, variable: 'knownHosts')
                     ]) {
                         remote.user = username
                         remote.identityFile = identity
                         remote.knownHosts = knownHosts
                         
+                        sshPut remote: remote, from: './.build/docker-compose.yml', into: '.'
                         sshCommand remote: remote, command: """
-                            docker login --username ${dockerUsername} --password ${dockerPassword} ${params.DOCKER_REGISTRY}
+                            docker login --username \$DOCKER_SERVICE_CREDS_USR --password \$DOCKER_SERVICE_CREDS_PSW ${params.DOCKER_REGISTRY}
                             docker stack deploy \\
-                                --compose-file ./.build/docker-compose.yml \\
+                                --compose-file ./docker-compose.yml \\
                                 --with-registry-auth \\
                                 abtesting
 
                             docker logout ${params.DOCKER_REGISTRY}
                         """
+                        sshRemove remote: remote, path: './docker-compose.yml'
                     }
                 }
             }

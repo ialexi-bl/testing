@@ -1,5 +1,3 @@
-version: '1.0'
-
 secrets:
     tls-crt:
         external: true
