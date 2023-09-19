@@ -1,0 +1,25 @@
+version: '1.0'
+
+secrets:
+    tls-crt:
+        external: true
+    tls-key:
+        external: true
+
+services:
+    nginx:
+        image: nginx:1.25.2
+        restart: always
+        ports:
+            - 443:443
+            - 80:80
+        secrets:
+            - tls-crt
+            - tls-key
+
+    ssr:
+        image: '${ABTESTING_IMAGE}'
+        environment:
+            - PORT=3000
+        deploy:
+            replicas: 3

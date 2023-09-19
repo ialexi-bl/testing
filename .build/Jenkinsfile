@@ -40,8 +40,8 @@ pipeline {
 
                     withCredentials([
                         sshUserPrivateKey(credentialsId: params.DOCKER_SERVICE_CREDENTIALS, keyFileVariable: 'identity', passphraseVariable: 'passphrase', usernameVariable: 'username'),
-                        file(credentialsId: params.DOCKER_SERVICE_HOSTKEY, variable: 'knownHosts'),
-                        usernamePassword(credentialsId: params.DOCKER_REGISTRY_CREDENTIALS, usernameVariable: 'dockerUsername', passwordVariable: 'dockerPassword')
+                        usernamePassword(credentialsId: params.DOCKER_REGISTRY_CREDENTIALS, usernameVariable: 'dockerUsername', passwordVariable: 'dockerPassword'),
+                        file(credentialsId: params.DOCKER_SERVICE_HOSTKEY, variable: 'knownHosts')
                     ]) {
                         remote.user = username
                         remote.identityFile = identity
@@ -49,21 +49,10 @@ pipeline {
                         
                         sshCommand remote: remote, command: """
                             docker login --username ${dockerUsername} --password ${dockerPassword} ${params.DOCKER_REGISTRY}
-
-                            docker service create \\
-                                --name ${serviceName} \\
+                            docker stack deploy \\
+                                --compose-file ./.build/docker-compose.yml \\
                                 --with-registry-auth \\
-                                --replicas 3 \\
-                                --publish published=80,target=3000 \\
-                                -e PORT=3000 \\
-                                ${image}
-
-                            if [[ \$? != 0 ]]; then
-                                docker service update \\
-                                    --with-registry-auth \\
-                                    --image ${image} \\
-                                    ${serviceName}
-                            fi
+                                abtesting
 
                             docker logout ${params.DOCKER_REGISTRY}
                         """
