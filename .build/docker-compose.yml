@@ -1,3 +1,5 @@
+version: '3.3'
+
 secrets:
     tls-crt:
         external: true
@@ -14,6 +16,14 @@ services:
         secrets:
             - tls-crt
             - tls-key
+        volumes:
+            - type: bind
+              source: ./nginx.conf
+              target: /etc/nginx/nginx.conf
+        deploy:
+            placement:
+                constraints:
+                    - node.hostname==agent2
 
     ssr:
         image: '${ABTESTING_IMAGE}'

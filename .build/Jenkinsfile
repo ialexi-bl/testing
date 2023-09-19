@@ -51,8 +51,11 @@ pipeline {
                         remote.knownHosts = knownHosts
                         
                         sshPut remote: remote, from: './.build/docker-compose.yml', into: '.'
+                        sshPut remote: remote, from: './.build/nginx.conf', into: '.'
                         sshCommand remote: remote, command: """
                             docker login --username \$DOCKER_SERVICE_CREDS_USR --password \$DOCKER_SERVICE_CREDS_PSW ${params.DOCKER_REGISTRY}
+
+                            export ABTESTING_IMAGE=${env.ABTESTING_IMAGE}
                             docker stack deploy \\
                                 --compose-file ./docker-compose.yml \\
                                 --with-registry-auth \\

@@ -6,6 +6,4 @@ COPY ./build ./build
 
 RUN npm ci --omit=dev
 
-ENV PORT=80
-EXPOSE 80
 CMD [ "node", "build" ]
