@@ -2,27 +2,45 @@ pipeline {
     agent any
 
     stages {
-        stage('Build app') {
-            steps {
-                sh 'npm i'
-                sh 'npm run build'
-                archiveArtifacts artifacts: 'build/**, package.json, package-lock.json', fingerprint: true
+        def buildImage(imageName, dockerFile) {
+            script {
+                def image = docker.build(imageName, "-f ${dockerFile} .")
+                docker.withRegistry("https://${params.DOCKER_REGISTRY}", "${params.DOCKER_REGISTRY_CREDENTIALS}") {
+                    image.push()
+                    image.push('latest')
+                }
+                sh "docker rmi ${imageName}"
             }
         }
-        stage('Build and publish docker image') {
-            steps {
-                script {
-                    echo "Building docker image"
-                    def image = docker.build("abtesting:${env.BUILD_ID}", '-f ./.build/Dockerfile .')
 
-                    echo "Publishing image to registry"
-                    docker.withRegistry("https://${params.DOCKER_REGISTRY}", "${params.DOCKER_REGISTRY_CREDENTIALS}") {
-                        image.push()
-                        image.push('latest')
+        parallel {
+            stage ('Application') {
+                stage('Build app') {
+                    steps {
+                        sh 'npm i'
+                        sh 'npm run build'
+                        archiveArtifacts artifacts: 'build/**, package.json, package-lock.json', fingerprint: true
+                    }
+                }
+                stage('Build and publish docker image') {
+                    steps {
+                        script {
+                            buildImage("abtesting:${env.BUILD_ID}", "./.build/Dockerfile.ssr")
+                        }
+                    }
+                }
+            }
+            stage ('Nginx') {
+                stage('Build and publish docker image') {
+                    steps {
+                        script {
+                            buildImage("abtesting-proxy:${env.BUILD_ID}", "./.build/Dockerfile.nginx")
+                        }
                     }
                 }
             }
         }
+
         stage('Deploy') {
             when {
                 expression {
@@ -32,6 +50,7 @@ pipeline {
 
             environment {
                 DOCKER_SERVICE_CREDS = credentials("${params.DOCKER_REGISTRY_CREDENTIALS}")
+                ABTESTING_PROXY_IMAGE = "${params.DOCKER_REGISTRY}/nginx:${env.BUILD_ID}"
                 ABTESTING_IMAGE = "${params.DOCKER_REGISTRY}/abtesting:${env.BUILD_ID}"
             }
 
@@ -51,10 +70,10 @@ pipeline {
                         remote.knownHosts = knownHosts
                         
                         sshPut remote: remote, from: './.build/docker-compose.yml', into: '.'
-                        sshPut remote: remote, from: './.build/nginx.conf', into: '.'
                         sshCommand remote: remote, command: """
                             docker login --username \$DOCKER_SERVICE_CREDS_USR --password \$DOCKER_SERVICE_CREDS_PSW ${params.DOCKER_REGISTRY}
 
+                            export ABTESTING_PROXY_IMAGE=${env.ABTESTING_PROXY_IMAGE}
                             export ABTESTING_IMAGE=${env.ABTESTING_IMAGE}
                             docker stack deploy \\
                                 --compose-file ./docker-compose.yml \\
@@ -70,3 +89,18 @@ pipeline {
         }
     }
 }
+
+
+// registry:
+// abtesting
+// NconTriGAnGL
+
+// jenkins:
+// abtesting
+// z8Ck963+#g4=1IO|GP:.
+
+// Beget:
+// ialexi49
+// JyCTD1I*
+// fetch(`https://api.beget.com/api/dns/changeRecords?login=ialexi49&passwd=JyCTD1I*&input_format=json&output_format=json&input_data={"fqdn":"abc-test.jabuj.com","records":{"A":[{"priority":10,"value":"127.0.0.1"}]}}`, {method:'POST'}).then(r=>r.text()).then(console.log)
+

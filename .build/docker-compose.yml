@@ -7,23 +7,14 @@ secrets:
         external: true
 
 services:
-    nginx:
-        image: nginx:1.25.2
-        restart: always
+    proxy:
+        image: '${ABTESTING_PROXY_IMAGE}'
         ports:
             - 443:443
             - 80:80
         secrets:
             - tls-crt
             - tls-key
-        volumes:
-            - type: bind
-              source: ./nginx.conf
-              target: /etc/nginx/nginx.conf
-        deploy:
-            placement:
-                constraints:
-                    - node.hostname==agent2
 
     ssr:
         image: '${ABTESTING_IMAGE}'
