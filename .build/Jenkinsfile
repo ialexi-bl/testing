@@ -25,9 +25,7 @@ pipeline {
                 }
                 stage ('Nginx') {
                     steps {
-                        script {
-                            buildImage("abtesting-proxy:${env.BUILD_ID}", "./.build/Dockerfile.nginx")
-                        }
+                        buildImage("abtesting-proxy:${env.BUILD_ID}", "./.build/Dockerfile.nginx")
                     }
                 }
             }
@@ -48,7 +46,6 @@ pipeline {
 
             steps {
                 script {
-                    def serviceName = "abtesting"
                     def remote = [:]
                     remote.name = params.DOCKER_SERVICE_HOST
                     remote.host = params.DOCKER_SERVICE_HOST
