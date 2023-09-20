@@ -1,37 +1,29 @@
+void buildImage(imageName, dockerFile) {
+    script {
+        def image = docker.build(imageName, "-f ${dockerFile} .")
+        docker.withRegistry("https://${params.DOCKER_REGISTRY}", "${params.DOCKER_REGISTRY_CREDENTIALS}") {
+            image.push()
+            image.push('latest')
+        }
+        sh "docker rmi ${imageName}"
+    }
+}
+
 pipeline {
     agent any
 
     stages {
-        def buildImage(imageName, dockerFile) {
-            script {
-                def image = docker.build(imageName, "-f ${dockerFile} .")
-                docker.withRegistry("https://${params.DOCKER_REGISTRY}", "${params.DOCKER_REGISTRY_CREDENTIALS}") {
-                    image.push()
-                    image.push('latest')
-                }
-                sh "docker rmi ${imageName}"
-            }
-        }
-
-        parallel {
-            stage ('Application') {
-                stage('Build app') {
+        stage('Build and publish docker image') {
+            parallel {
+                stage ('Application') {
                     steps {
                         sh 'npm i'
                         sh 'npm run build'
                         archiveArtifacts artifacts: 'build/**, package.json, package-lock.json', fingerprint: true
+                        buildImage("abtesting:${env.BUILD_ID}", "./.build/Dockerfile.ssr")
                     }
                 }
-                stage('Build and publish docker image') {
-                    steps {
-                        script {
-                            buildImage("abtesting:${env.BUILD_ID}", "./.build/Dockerfile.ssr")
-                        }
-                    }
-                }
-            }
-            stage ('Nginx') {
-                stage('Build and publish docker image') {
+                stage ('Nginx') {
                     steps {
                         script {
                             buildImage("abtesting-proxy:${env.BUILD_ID}", "./.build/Dockerfile.nginx")
@@ -89,7 +81,6 @@ pipeline {
         }
     }
 }
-
 
 // registry:
 // abtesting
