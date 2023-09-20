@@ -42,7 +42,7 @@ pipeline {
 
             environment {
                 DOCKER_SERVICE_CREDS = credentials("${params.DOCKER_REGISTRY_CREDENTIALS}")
-                ABTESTING_PROXY_IMAGE = "${params.DOCKER_REGISTRY}/nginx:${env.BUILD_ID}"
+                ABTESTING_PROXY_IMAGE = "${params.DOCKER_REGISTRY}/abtesting-proxy:${env.BUILD_ID}"
                 ABTESTING_IMAGE = "${params.DOCKER_REGISTRY}/abtesting:${env.BUILD_ID}"
             }
 
@@ -81,17 +81,3 @@ pipeline {
         }
     }
 }
-
-// registry:
-// abtesting
-// NconTriGAnGL
-
-// jenkins:
-// abtesting
-// z8Ck963+#g4=1IO|GP:.
-
-// Beget:
-// ialexi49
-// JyCTD1I*
-// fetch(`https://api.beget.com/api/dns/changeRecords?login=ialexi49&passwd=JyCTD1I*&input_format=json&output_format=json&input_data={"fqdn":"abc-test.jabuj.com","records":{"A":[{"priority":10,"value":"127.0.0.1"}]}}`, {method:'POST'}).then(r=>r.text()).then(console.log)
-
