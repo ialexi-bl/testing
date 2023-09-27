@@ -1,17 +1,8 @@
 <script lang="ts">
     import '../app.css'
-    interface Project {
-        id: string
-        name: string
-    }
-    const projects: Project[] = Array(3)
-        .fill(null)
-        .map((_, i) => ({
-            id: `${i + 1}`,
-            name: `Проект ${i + 1}`,
-        }))
-
     import {page} from '$app/stores'
+    import type {LayoutData} from './$types'
+    export let data: LayoutData
 
     $: id = $page.params.id as string | undefined
 </script>
@@ -27,10 +18,10 @@
         <nav
             class="w-64 bg-primary border-r border-white/20 flex flex-col justify-start items-center px-3"
         >
-            <a href="/" class="side-panel-btn-idle mt-6 mb-4 text-center border-dashed"
-                >Новый Проект</a
-            >
-            {#each projects as project (project.id)}
+            <a href="/create" class="side-panel-btn-idle mt-6 mb-4 text-center border-dashed">
+                Новый Проект
+            </a>
+            {#each data.projects as project (project.id)}
                 <a
                     href={`/projects/${project.id}`}
                     class="my-2 text-left"
