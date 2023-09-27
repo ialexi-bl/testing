@@ -1,0 +1,20 @@
+name: CD Deployment
+
+on:
+    push:
+        branches:
+            - master
+
+jobs:
+    build:
+        name: 'Trigger build pipeline'
+        runs-on: ubuntu-latest
+        steps:
+            - uses: jabbukka/jenkins-trigger@main
+              with:
+                  url: 'https://agent2.jabuj.com:8080'
+                  job_name: 'AB Testing Release'
+                  user_name: 'abtesting'
+                  api_token: '${{ secrets.JENKINS_API_TOKEN }}'
+                  wait: 'true'
+                  timeout: '999999'

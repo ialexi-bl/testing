@@ -1,0 +1,26 @@
+version: '3.3'
+
+secrets:
+    tls-crt:
+        external: true
+    tls-key:
+        external: true
+
+services:
+    proxy:
+        image: '${ABTESTING_PROXY_IMAGE}'
+        ports:
+            - 443:443
+            - 80:80
+        secrets:
+            - tls-crt
+            - tls-key
+        depends_on:
+            - ssr
+
+    ssr:
+        image: '${ABTESTING_IMAGE}'
+        environment:
+            - PORT=3000
+        deploy:
+            replicas: 3
