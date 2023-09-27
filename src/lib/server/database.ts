@@ -5,7 +5,7 @@ const db: Project[] = []
 export const getProjects = () => [...db]
 
 export const createProject = (name: string, configuration: unknown) => {
-    const id = `${getProjects().length + 1}`
+    const id = `${getProjects().length}`
     const status = 'created'
     db.push({id, name, status, configuration})
 }
