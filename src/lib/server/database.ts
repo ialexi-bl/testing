@@ -1,19 +1,19 @@
 import type {Project} from '$lib/types/project'
 
-const db: Project[] = []
+let db: Project[] = [
+    {id: '0', name: 'Proj 1', status: 'created', configuration: null},
+    {id: '1', name: 'Proj 2', status: 'created', configuration: null},
+    {id: '2', name: 'Proj 3', status: 'created', configuration: null},
+]
 
 export const getProjects = () => [...db]
 
-export const createProject = (name: string, configuration: unknown) => {
-    const id = `${getProjects().length}`
-    const status = 'created'
-    db.push({id, name, status, configuration})
-}
-
-export const hasProject = (id: string) => {
-    return db.some((p) => p.id === id)
-}
-
 export const getProject = (id: string): Project | undefined => {
     return db.find((p) => p.id === id)
+}
+
+export const update = (projects: Project[]): void => {
+    if (projects !== null && projects !== undefined && projects.length > 0) {
+        db = [...projects]
+    }
 }

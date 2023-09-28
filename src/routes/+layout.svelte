@@ -2,7 +2,23 @@
     import '../app.css'
     import {page} from '$app/stores'
     import type {LayoutData} from './$types'
+    import {onMount} from 'svelte'
+    import {init, projects} from '$lib/stores/projects.store'
+
     export let data: LayoutData
+
+    onMount(() => {
+        init(data.projects)
+
+        projects.subscribe((projects) => {
+            if (projects.length > 0) {
+                fetch('/api/projects', {
+                    method: 'POST',
+                    body: JSON.stringify(projects),
+                })
+            }
+        })
+    })
 
     $: id = $page.params.id as string | undefined
 </script>
@@ -21,7 +37,7 @@
             <a href="/create" class="side-panel-btn-idle mt-6 mb-4 text-center border-dashed">
                 Новый Проект
             </a>
-            {#each data.projects as project (project.id)}
+            {#each $projects as project (project.id)}
                 <a
                     href={`/projects/${project.id}`}
                     class="my-2 text-left"
