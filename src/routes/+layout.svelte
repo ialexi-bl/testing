@@ -3,21 +3,12 @@
     import {page} from '$app/stores'
     import type {LayoutData} from './$types'
     import {onMount} from 'svelte'
-    import {init, projects} from '$lib/stores/projects.store'
+    import {setProjects, projects} from '$lib/stores/projects.store'
 
     export let data: LayoutData
 
     onMount(() => {
-        init(data.projects)
-
-        projects.subscribe((projects) => {
-            if (projects.length > 0) {
-                fetch('/api/projects', {
-                    method: 'POST',
-                    body: JSON.stringify(projects),
-                })
-            }
-        })
+        setProjects(data.projects)
     })
 
     $: id = $page.params.id as string | undefined

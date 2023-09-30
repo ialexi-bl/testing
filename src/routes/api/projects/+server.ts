@@ -1,9 +1,9 @@
 import type {RequestHandler} from './$types'
-import {update} from '$lib/server/database'
-import type {Project} from '$lib/types/project'
 import {json} from '@sveltejs/kit'
-export const POST: RequestHandler = async ({request}) => {
-    const projects = await request.json()
-    update(projects as Project[])
-    return json({}, {status: 201})
+import {getProjects, getUser} from '$lib/server/database'
+export const GET: RequestHandler = async ({cookies}) => {
+    const cachedUserID = cookies.get('userID')
+    const uuid = getUser(cachedUserID)
+    const projects = getProjects(uuid)
+    return json({projects}, {status: 201})
 }

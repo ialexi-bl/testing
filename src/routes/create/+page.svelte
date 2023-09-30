@@ -1,9 +1,9 @@
 <script lang="ts">
-    import {createProject} from '$lib/stores/projects.store'
+    import {createProject} from '$lib/repository'
 
     let name = ''
     function submit() {
-        createProject(name, null)
+        createProject({name, configuration: null})
     }
 </script>
 
