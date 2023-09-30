@@ -1,9 +1,9 @@
 import type {LayoutServerLoad} from './$types'
-import {getProjects, getUser} from '$lib/server/database'
+import {getProjects} from '$lib/server/database'
 
 export const load: LayoutServerLoad = ({cookies}) => {
     const cachedUserID = cookies.get('userID')
-    const userID = getUser(cachedUserID)
+    const userID = cachedUserID ?? crypto.randomUUID()
     if (userID !== cachedUserID) {
         cookies.set('userID', userID)
     }
