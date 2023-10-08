@@ -1,4 +1,4 @@
-import {verifyCsrfToken} from '$lib/server/csrf'
+import {setupCsrfToken, verifyCsrfToken} from '$lib/server/csrf'
 import type {Handle} from '@sveltejs/kit'
 
 export const handle: Handle = ({event, resolve}) => {
@@ -6,9 +6,11 @@ export const handle: Handle = ({event, resolve}) => {
         cookies,
         request: {method, headers},
     } = event
+
     if (['POST', 'GET', 'DELETE', 'PUT'].includes(method)) {
         verifyCsrfToken({headers, cookies})
     }
+    setupCsrfToken({cookies})
 
     return resolve(event)
 }
