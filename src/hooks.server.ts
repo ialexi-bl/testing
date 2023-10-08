@@ -7,7 +7,7 @@ export const handle: Handle = ({event, resolve}) => {
         request: {method, headers},
     } = event
 
-    if (['POST', 'GET', 'DELETE', 'PUT'].includes(method)) {
+    if (['POST', 'DELETE', 'PUT', 'PATCH'].includes(method)) {
         verifyCsrfToken({headers, cookies})
     }
     setupCsrfToken({cookies})

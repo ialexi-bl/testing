@@ -17,6 +17,7 @@ export const setupCsrfToken = async ({cookies}: {cookies: Cookies}) => {
     const bytes = await randomBytesAsync(64)
     cookies.set(COOKIE_NAME, bytes.toString('hex'), {
         path: '/',
+        httpOnly: false,
         maxAge: 7 * 24 * 60 * 60,
     })
 }
