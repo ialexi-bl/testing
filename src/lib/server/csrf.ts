@@ -27,7 +27,7 @@ export const verifyCsrfToken = ({headers, cookies}: {headers: Headers; cookies: 
     const header = headers.get(HEADER_NAME)
 
     if (!cookie || !header || cookie !== header) {
-        throw error(500, 'Invalid CSRF token')
+        throw error(400, 'Invalid CSRF token')
     }
     return true
 }
