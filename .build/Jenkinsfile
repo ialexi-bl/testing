@@ -45,6 +45,8 @@ pipeline {
             }
 
             steps {
+                // Wait a bit for docker to not get confused
+                sleep 15
                 script {
                     def remote = [:]
                     remote.name = params.DOCKER_SERVICE_HOST
