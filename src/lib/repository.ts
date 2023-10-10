@@ -1,14 +1,15 @@
 import {setProjects} from '$lib/stores/projects.store'
 import type {Project} from '$lib/types/project'
+import {callApi} from './api'
 
 export const syncProjects = () => {
-    fetch('/api/projects')
+    callApi('/api/projects')
         .then((r) => r.json())
         .then(({projects}) => setProjects(projects))
 }
 
 export const createProject = (project: Pick<Project, 'name' | 'configuration'>) => {
-    fetch('/api/projects/create', {
+    callApi('/api/projects/create', {
         method: 'POST',
         body: JSON.stringify(project),
     })
@@ -17,7 +18,7 @@ export const createProject = (project: Pick<Project, 'name' | 'configuration'>) 
 }
 
 export const updateProject = (project: Project) => {
-    fetch('/api/projects/update', {
+    callApi('/api/projects/update', {
         method: 'POST',
         body: JSON.stringify(project),
     })
