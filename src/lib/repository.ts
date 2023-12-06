@@ -25,3 +25,12 @@ export const updateProject = (project: Project) => {
         .then((r) => r.json())
         .then(({projects}) => setProjects(projects))
 }
+
+export const deleteProject = (id: string) => {
+    callApi('/api/projects/delete', {
+        method: 'POST',
+        body: id,
+    })
+        .then((r) => r.json())
+        .then(({projects}) => setProjects(projects))
+}
