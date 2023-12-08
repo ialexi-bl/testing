@@ -36,3 +36,7 @@ export const updateProject = (uuid: string, project: Project): Project[] => {
         projects.map((p) => (p.id !== project.id ? p : {...project})),
     )
 }
+
+export const deleteProject = (uuid: string, id: string) => {
+    return updateDb(uuid, (projects) => projects.filter((p) => p.id != id))
+}
